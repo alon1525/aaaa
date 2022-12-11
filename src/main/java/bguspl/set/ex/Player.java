@@ -52,6 +52,7 @@ public class Player implements Runnable {
      */
     private int score;
 
+    public int[] currentTokens = new int[3];
     /**
      * The class constructor.
      *
@@ -126,10 +127,10 @@ public class Player implements Runnable {
      * @post - the player's score is updated in the ui.
      */
     public void point() {
-        // TODO implement
-
+        currentTokens = new int[3];
+        score++;
         int ignored = table.countCards(); // this part is just for demonstration in the unit tests
-        env.ui.setScore(id, ++score);
+        env.ui.setScore(id, score);
     }
 
     /**

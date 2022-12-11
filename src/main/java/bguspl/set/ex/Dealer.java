@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.sql.ShardingKey;
 import java.util.*;
 /**
  * This class manages the dealer's threads and data
@@ -22,7 +23,6 @@ public class Dealer implements Runnable {
      */
     private final Table table;
     private final Player[] players;
-
     /**
      * The list of card ids that are left in the dealer's deck.
      */
@@ -32,11 +32,11 @@ public class Dealer implements Runnable {
      * True iff game should be terminated due to an external event.
      */
     private volatile boolean terminate;
-
+    private long currentTime = 60;
     /**
      * The time when the dealer needs to reshuffle the deck due to turn timeout.
      */
-    private long reshuffleTime = Long.MAX_VALUE;
+    private long reshuffleTime = 0;
 
     public Dealer(Env env, Table table, Player[] players) {
         this.env = env;
@@ -54,8 +54,8 @@ public class Dealer implements Runnable {
         while (!shouldFinish()) {
             placeCardsOnTable();
             timerLoop();
-            updateTimerDisplay(false);
             removeAllCardsFromTable();
+            updateTimerDisplay(true);
         }
         announceWinners();
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
@@ -65,9 +65,10 @@ public class Dealer implements Runnable {
      * The inner loop of the dealer thread that runs as long as the countdown did not time out.
      */
     private void timerLoop() {
-        while (!terminate && System.currentTimeMillis() < reshuffleTime) {
+        while (!terminate && currentTime > reshuffleTime) {
             sleepUntilWokenOrTimeout();
             updateTimerDisplay(false);
+            currentTime--;
             removeCardsFromTable();
             placeCardsOnTable();
         }
@@ -93,7 +94,14 @@ public class Dealer implements Runnable {
      * Checks cards should be removed from the table and removes them.
      */
     private void removeCardsFromTable() {
-        // TODO implement
+        for(Player player : players)
+        {
+            boolean isSet = env.util.testSet(player.currentTokens);
+            if(isSet)
+            {
+                player.point();
+            }
+        }
     }
 
     /**
@@ -114,7 +122,10 @@ public class Dealer implements Runnable {
      * Sleep for a fixed amount of time or until the thread is awakened for some purpose.
      */
     private void sleepUntilWokenOrTimeout() {
-        // TODO implement
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {}
+        
     }
 
     /**
@@ -123,7 +134,17 @@ public class Dealer implements Runnable {
     private void updateTimerDisplay(boolean reset) {
         if(!reset)
         {
-            
+            if(currentTime <= 5)
+                env.ui.setCountdown(currentTime*1000, true);
+            else
+            {
+                env.ui.setCountdown(currentTime*1000, false);
+            }
+        }
+        else
+        {
+            currentTime = 60;
+            env.ui.setCountdown(currentTime*1000, false);
         }
     }
 
@@ -155,11 +176,11 @@ public class Dealer implements Runnable {
         }
         int[] bestPlayers = new int[players.length];
         int bestScore = players[players.length-1].getScore();
-        int index = 0;
+        int index = players.length-1;
         while(players[index].getScore() == bestScore)
         {
             bestPlayers[index] = players[index].id;
-            index++;
+            index--;
         }
         env.ui.announceWinner(bestPlayers);
     }
