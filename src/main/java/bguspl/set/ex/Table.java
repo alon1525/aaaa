@@ -117,8 +117,10 @@ public class Table {
      * @param player - the player the token belongs to.
      * @param slot   - the slot on which to place the token.
      */
-    public void placeToken(int player, int slot) {
-        // TODO implement
+    public void placeToken(Player player, int slot) {               //SYNCRONISED
+        player.currentTokens[player.tokenCount] = slot;
+        player.tokenCount++;
+        env.ui.placeToken(player.id, slot);
     }
 
     /**
@@ -127,8 +129,20 @@ public class Table {
      * @param slot   - the slot from which to remove the token.
      * @return       - true iff a token was successfully removed.
      */
-    public boolean removeToken(int player, int slot) {
-        // TODO implement
+    public boolean removeToken(Player player, int slot) {               //SYNCRONISED
+        if (player.tokenCount == 0){
         return false;
+    }
+        int j=0;
+        for (int i=0; i<player.tokenCount; i++){
+            if(player.currentTokens[i]==slot){
+                j = i;
+            }
+        }
+        for (int i=j+1; i<player.tokenCount; i++){
+            player.currentTokens[i-1] = player.currentTokens[i];
+        }
+        env.ui.removeToken(player.id, slot);
+        return true;
     }
 }

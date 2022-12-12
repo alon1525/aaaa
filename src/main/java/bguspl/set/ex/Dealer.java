@@ -97,9 +97,24 @@ public class Dealer implements Runnable {
         for(Player player : players)
         {
             boolean isSet = env.util.testSet(player.currentTokens);
+            int[] slotsToDelete = player.currentTokens;
             if(isSet)
             {
                 player.point();
+                for (Player player2 : players){
+                    
+                    for(int i=0; i<player2.tokenCount; i++){
+                        if (player2.currentTokens[i] == slotsToDelete[1] | 
+                            player2.currentTokens[i] == slotsToDelete[2] |
+                            player2.currentTokens[i] == slotsToDelete[3]){
+                                table.removeToken(player2, i);
+                         }
+                    }
+                }
+                
+            }
+            for (int slot : slotsToDelete){
+                table.removeCard(slot);
             }
         }
     }
@@ -155,6 +170,9 @@ public class Dealer implements Runnable {
         for(int i =0;i<=11;i++)//removing all the cards on the table
         {
             table.removeCard(i);
+        }
+        for (Player player : players){
+            player.tokenCount = 0;
         }
         Collections.shuffle(deck);//rearrange the cards so it will be different
     }

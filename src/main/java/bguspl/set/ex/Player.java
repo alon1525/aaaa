@@ -52,7 +52,9 @@ public class Player implements Runnable {
      */
     private int score;
 
-    public int[] currentTokens = new int[3];
+    public int[] currentTokens;
+
+    public int tokenCount;
     /**
      * The class constructor.
      *
@@ -67,6 +69,8 @@ public class Player implements Runnable {
         this.table = table;
         this.id = id;
         this.human = human;
+        currentTokens = new int[3];
+        tokenCount = 0;
     }
 
     /**
@@ -117,7 +121,17 @@ public class Player implements Runnable {
      * @param slot - the slot corresponding to the key pressed.
      */
     public void keyPressed(int slot) {
-        // TODO implement
+        boolean tokenIsThere = false;
+        int i =0;
+        while (i<tokenCount & !tokenIsThere){
+            if(currentTokens[i]==slot){
+                tokenIsThere = true;
+                table.removeToken(this, slot);
+            }
+        }
+        if (tokenIsThere == false & tokenCount<3){
+            table.placeToken(this, slot);
+        }
     }
 
     /**
@@ -127,12 +141,16 @@ public class Player implements Runnable {
      * @post - the player's score is updated in the ui.
      */
     public void point() {
-        currentTokens = new int[3];
+        resetTokens();
         score++;
         int ignored = table.countCards(); // this part is just for demonstration in the unit tests
         env.ui.setScore(id, score);
     }
 
+    public void resetTokens()
+    {
+        tokenCount = 0;
+    }
     /**
      * Penalize a player and perform other related actions.
      */
