@@ -133,7 +133,7 @@ public class Player implements Runnable {
             }
             i++;
         }
-        if(!tokenIsThere){
+        if(!tokenIsThere & tokenCount<3){
             table.placeToken(this, slot);
         }
         
