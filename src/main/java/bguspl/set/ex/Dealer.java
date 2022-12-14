@@ -23,6 +23,8 @@ public class Dealer implements Runnable {
      */
     private final Table table;
     private final Player[] players;
+    private int[] timesUpdated;
+    public boolean[] isFrozen;
     /**
      * The list of card ids that are left in the dealer's deck.
      */
@@ -36,13 +38,15 @@ public class Dealer implements Runnable {
      * The time when the dealer needs to reshuffle the deck due to turn timeout.
      */
     private long reshuffleTime = System.currentTimeMillis()+60000;
-    Long currentTime = System.currentTimeMillis();
+    private Long currentTime = System.currentTimeMillis();
 
     public Dealer(Env env, Table table, Player[] players) {
         this.env = env;
         this.table = table;
         this.players = players;
         deck = IntStream.range(0, env.config.deckSize).boxed().collect(Collectors.toList());
+        timesUpdated = new int[players.length];
+        isFrozen = new boolean[players.length];
     }
 
     /**
@@ -98,25 +102,29 @@ public class Dealer implements Runnable {
         if(!table.possibleSetsQueue.isEmpty())
         {
             int[] possibleSetAndPlayer = table.possibleSetsQueue.remove();
-            int[] possibleSet = {possibleSetAndPlayer[0],possibleSetAndPlayer[1],possibleSetAndPlayer[2]};
-            Player player = players[possibleSetAndPlayer[3]];            
-            boolean isSet = env.util.testSet(possibleSet);
+            Player player = players[possibleSetAndPlayer[3]];
+            int[] possibleSetCards = {table.slotToCard[possibleSetAndPlayer[0]],table.slotToCard[possibleSetAndPlayer[1]],table.slotToCard[possibleSetAndPlayer[2]]};            
+            boolean isSet = env.util.testSet(possibleSetCards);
             if(isSet)
             {
                 player.point();
                 for (Player player2 : players){
-                    
                     for(int i=0; i<player2.tokenCount; i++){
-                        if (player2.currentTokens[i] == possibleSet[1] | 
-                            player2.currentTokens[i] == possibleSet[2] |
-                            player2.currentTokens[i] == possibleSet[3]){
+                        if (player2.currentTokens[i] == possibleSetAndPlayer[0] | 
+                            player2.currentTokens[i] == possibleSetAndPlayer[1] |
+                            player2.currentTokens[i] == possibleSetAndPlayer[2]){
                             table.removeToken(player2, i);
                          }
                     }
                 }
-                for (int slot : possibleSet){
-                    table.removeCard(slot);
+                for (int i=0; i<possibleSetAndPlayer.length-1;i++){
+                    table.removeCard(possibleSetAndPlayer[i]);
                 }
+                updateTimerDisplay(true, currentTime);
+            }
+            else
+            {
+                players[possibleSetAndPlayer[3]].penalty();
             }
             
         }
@@ -153,12 +161,23 @@ public class Dealer implements Runnable {
     private void updateTimerDisplay(boolean reset, Long currentTime) {
         if(!reset)
         {
-            if((reshuffleTime-currentTime) <= 5000)
-                env.ui.setCountdown(reshuffleTime-currentTime, true);
+            for(int i=0; i<players.length; i++){
+                if(isFrozen[i]){
+                    timesUpdated[i]++;
+                    env.ui.setFreeze(i,(3-timesUpdated[i])*1000);
+                }
+                else
+                {
+                    timesUpdated[i] = 0;
+                }
+            }
+            if((reshuffleTime-currentTime) <= 6000)
+                env.ui.setCountdown(Math.round((reshuffleTime-currentTime)/1000)*1000, true);
             else
             {
                 env.ui.setCountdown(reshuffleTime-currentTime, false);
             }
+            
         }
         else
         {
@@ -173,7 +192,9 @@ public class Dealer implements Runnable {
     private void removeAllCardsFromTable() {
         for(int i =0;i<=11;i++)//removing all the cards on the table
         {
+            deck.add(table.slotToCard[i]);
             table.removeCard(i);
+           
         }
         for (Player player : players){
             player.tokenCount = 0;

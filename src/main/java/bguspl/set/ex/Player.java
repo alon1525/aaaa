@@ -46,7 +46,7 @@ public class Player implements Runnable {
      * True iff game should be terminated due to an external event.
      */
     private volatile boolean terminate;
-
+    private Dealer dealer;
     /**
      * The current score of the player.
      */
@@ -55,6 +55,8 @@ public class Player implements Runnable {
     public int[] currentTokens;
 
     public int tokenCount;
+
+    public int freezeTime = 0;
     /**
      * The class constructor.
      *
@@ -71,6 +73,7 @@ public class Player implements Runnable {
         this.human = human;
         currentTokens = new int[3];
         tokenCount = 0;
+        this.dealer = dealer;
     }
 
     /**
@@ -130,9 +133,10 @@ public class Player implements Runnable {
             }
             i++;
         }
-        if (tokenIsThere == false & tokenCount<3){
+        if(!tokenIsThere){
             table.placeToken(this, slot);
         }
+        
     }
 
     /**
@@ -160,8 +164,10 @@ public class Player implements Runnable {
      */
     public void penalty() {
         try {
+            dealer.isFrozen[id] = true;
             env.ui.setFreeze(id, 3000);
             Thread.sleep(3000);
+            dealer.isFrozen[id] = false;
         } catch (InterruptedException ignored) {}
 
     }
