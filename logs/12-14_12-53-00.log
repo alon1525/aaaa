@@ -1,0 +1,42 @@
+[2022-12-14 12:53:00] [INFO   ] cannot read configuration file config.properties trying from resources.
+[2022-12-14 12:53:00] [INFO   ] configuration file was loaded from resources directory.
+[2022-12-14 12:53:00] [INFO   ] Thread dealer starting.
+[2022-12-14 12:53:01] [SEVERE ] placing card 0 in slot 0
+[2022-12-14 12:53:01] [SEVERE ] placing card 1 in slot 1
+[2022-12-14 12:53:01] [SEVERE ] placing card 2 in slot 2
+[2022-12-14 12:53:01] [SEVERE ] placing card 3 in slot 3
+[2022-12-14 12:53:01] [SEVERE ] placing card 4 in slot 4
+[2022-12-14 12:53:01] [SEVERE ] placing card 5 in slot 5
+[2022-12-14 12:53:01] [SEVERE ] placing card 6 in slot 6
+[2022-12-14 12:53:01] [SEVERE ] placing card 7 in slot 7
+[2022-12-14 12:53:01] [SEVERE ] placing card 8 in slot 8
+[2022-12-14 12:53:01] [SEVERE ] placing card 9 in slot 9
+[2022-12-14 12:53:02] [SEVERE ] placing card 10 in slot 10
+[2022-12-14 12:53:02] [SEVERE ] placing card 11 in slot 11
+[2022-12-14 12:53:04] [SEVERE ] Key 81 was pressed by player 0
+[2022-12-14 12:53:31] [SEVERE ] player 0 placing token on slot 0
+[2022-12-14 12:53:38] [SEVERE ] Key 68 was pressed by player 0
+[2022-12-14 12:54:01] [SEVERE ] removing card from slot 0
+[2022-12-14 12:54:01] [SEVERE ] removing card from slot 1
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 2
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 3
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 4
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 5
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 6
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 7
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 8
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 9
+[2022-12-14 12:54:02] [SEVERE ] removing card from slot 10
+[2022-12-14 12:54:03] [SEVERE ] removing card from slot 11
+[2022-12-14 12:54:03] [SEVERE ] placing card 28 in slot 0
+[2022-12-14 12:54:03] [SEVERE ] placing card 39 in slot 1
+[2022-12-14 12:54:03] [SEVERE ] placing card 27 in slot 2
+[2022-12-14 12:54:03] [SEVERE ] placing card 52 in slot 3
+[2022-12-14 12:54:03] [SEVERE ] placing card 49 in slot 4
+[2022-12-14 12:54:03] [SEVERE ] placing card 29 in slot 5
+[2022-12-14 12:54:03] [SEVERE ] placing card 46 in slot 6
+[2022-12-14 12:54:03] [SEVERE ] placing card 14 in slot 7
+[2022-12-14 12:54:03] [SEVERE ] placing card 37 in slot 8
+[2022-12-14 12:54:04] [SEVERE ] placing card 73 in slot 9
+[2022-12-14 12:54:04] [SEVERE ] placing card 47 in slot 10
+[2022-12-14 12:54:04] [SEVERE ] placing card 33 in slot 11

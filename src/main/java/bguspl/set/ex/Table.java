@@ -5,6 +5,8 @@ import bguspl.set.Env;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +30,7 @@ public class Table {
      * Mapping between a card and the slot it is in (null if none).
      */
     protected final Integer[] cardToSlot; // slot per card (if any)
+    public Queue<int[]> possibleSetsQueue;
 
     /**
      * Constructor for testing.
@@ -41,6 +44,7 @@ public class Table {
         this.env = env;
         this.slotToCard = slotToCard;
         this.cardToSlot = cardToSlot;
+        possibleSetsQueue = new LinkedList<int[]>();
     }
 
     /**
@@ -121,6 +125,15 @@ public class Table {
         player.currentTokens[player.tokenCount] = slot;
         player.tokenCount++;
         env.ui.placeToken(player.id, slot);
+        if(player.tokenCount == 3)
+        {
+            int[] possibleSetWithPlayer = new int[4];
+            possibleSetWithPlayer[0] = player.currentTokens[0];
+            possibleSetWithPlayer[1] = player.currentTokens[1];
+            possibleSetWithPlayer[2] = player.currentTokens[2];
+            possibleSetWithPlayer[3] = player.id;
+            possibleSetsQueue.add(possibleSetWithPlayer);
+        }
     }
 
     /**
@@ -142,6 +155,7 @@ public class Table {
         for (int i=j+1; i<player.tokenCount; i++){
             player.currentTokens[i-1] = player.currentTokens[i];
         }
+        player.tokenCount--;
         env.ui.removeToken(player.id, slot);
         return true;
     }

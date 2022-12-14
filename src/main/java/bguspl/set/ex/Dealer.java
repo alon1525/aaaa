@@ -32,11 +32,11 @@ public class Dealer implements Runnable {
      * True iff game should be terminated due to an external event.
      */
     private volatile boolean terminate;
-    private long currentTime = 60;
     /**
      * The time when the dealer needs to reshuffle the deck due to turn timeout.
      */
-    private long reshuffleTime = 0;
+    private long reshuffleTime = System.currentTimeMillis()+60000;
+    Long currentTime = System.currentTimeMillis();
 
     public Dealer(Env env, Table table, Player[] players) {
         this.env = env;
@@ -52,10 +52,11 @@ public class Dealer implements Runnable {
     public void run() {
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
         while (!shouldFinish()) {
+            Collections.shuffle(deck);
             placeCardsOnTable();
             timerLoop();
             removeAllCardsFromTable();
-            updateTimerDisplay(true);
+            updateTimerDisplay(true,currentTime);
         }
         announceWinners();
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
@@ -65,10 +66,10 @@ public class Dealer implements Runnable {
      * The inner loop of the dealer thread that runs as long as the countdown did not time out.
      */
     private void timerLoop() {
-        while (!terminate && currentTime > reshuffleTime) {
+        while (!terminate && System.currentTimeMillis() <= reshuffleTime) {
+            currentTime = System.currentTimeMillis();
             sleepUntilWokenOrTimeout();
-            updateTimerDisplay(false);
-            currentTime--;
+            updateTimerDisplay(false,currentTime);
             removeCardsFromTable();
             placeCardsOnTable();
         }
@@ -94,29 +95,32 @@ public class Dealer implements Runnable {
      * Checks cards should be removed from the table and removes them.
      */
     private void removeCardsFromTable() {
-        for(Player player : players)
+        if(!table.possibleSetsQueue.isEmpty())
         {
-            boolean isSet = env.util.testSet(player.currentTokens);
-            int[] slotsToDelete = player.currentTokens;
+            int[] possibleSetAndPlayer = table.possibleSetsQueue.remove();
+            int[] possibleSet = {possibleSetAndPlayer[0],possibleSetAndPlayer[1],possibleSetAndPlayer[2]};
+            Player player = players[possibleSetAndPlayer[3]];            
+            boolean isSet = env.util.testSet(possibleSet);
             if(isSet)
             {
                 player.point();
                 for (Player player2 : players){
                     
                     for(int i=0; i<player2.tokenCount; i++){
-                        if (player2.currentTokens[i] == slotsToDelete[1] | 
-                            player2.currentTokens[i] == slotsToDelete[2] |
-                            player2.currentTokens[i] == slotsToDelete[3]){
-                                table.removeToken(player2, i);
+                        if (player2.currentTokens[i] == possibleSet[1] | 
+                            player2.currentTokens[i] == possibleSet[2] |
+                            player2.currentTokens[i] == possibleSet[3]){
+                            table.removeToken(player2, i);
                          }
                     }
                 }
-                
+                for (int slot : possibleSet){
+                    table.removeCard(slot);
+                }
             }
-            for (int slot : slotsToDelete){
-                table.removeCard(slot);
-            }
+            
         }
+        
     }
 
     /**
@@ -146,20 +150,20 @@ public class Dealer implements Runnable {
     /**
      * Reset and/or update the countdown and the countdown display.
      */
-    private void updateTimerDisplay(boolean reset) {
+    private void updateTimerDisplay(boolean reset, Long currentTime) {
         if(!reset)
         {
-            if(currentTime <= 5)
-                env.ui.setCountdown(currentTime*1000, true);
+            if((reshuffleTime-currentTime) <= 5000)
+                env.ui.setCountdown(reshuffleTime-currentTime, true);
             else
             {
-                env.ui.setCountdown(currentTime*1000, false);
+                env.ui.setCountdown(reshuffleTime-currentTime, false);
             }
         }
         else
         {
-            currentTime = 60;
-            env.ui.setCountdown(currentTime*1000, false);
+            reshuffleTime = System.currentTimeMillis() + 60000;
+            env.ui.setCountdown(60000, false);
         }
     }
 

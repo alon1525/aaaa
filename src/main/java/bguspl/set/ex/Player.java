@@ -128,6 +128,7 @@ public class Player implements Runnable {
                 tokenIsThere = true;
                 table.removeToken(this, slot);
             }
+            i++;
         }
         if (tokenIsThere == false & tokenCount<3){
             table.placeToken(this, slot);
@@ -150,12 +151,19 @@ public class Player implements Runnable {
     public void resetTokens()
     {
         tokenCount = 0;
+        env.ui.removeToken(id,currentTokens[0]);
+        env.ui.removeToken(id,currentTokens[1]);
+        env.ui.removeToken(id,currentTokens[2]);
     }
     /**
      * Penalize a player and perform other related actions.
      */
     public void penalty() {
-        // TODO implement
+        try {
+            env.ui.setFreeze(id, 3000);
+            Thread.sleep(3000);
+        } catch (InterruptedException ignored) {}
+
     }
 
     public int getScore() {
