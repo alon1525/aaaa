@@ -145,11 +145,11 @@ public class Dealer implements Runnable {
      * Check if any cards can be removed from the deck and placed on the table.
      */
     private void placeCardsOnTable() {
-        for(int i =0;i<=11;i++)//for every empty slot we put a card there
+        for(int i =0;i<=11;i++)                 //for every empty slot we put a card there
         {
             if(!deck.isEmpty() && table.slotToCard[i]==null )
             {
-                Integer card = deck.remove(0);
+                Integer card = deck.remove(0);      
                 table.placeCard(card, i);
             }
         }
