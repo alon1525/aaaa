@@ -139,7 +139,7 @@ public class Player implements Runnable {
     }
 
     /**
-     * This method is called when a key is pressed.
+     * This method is called when a key is pressed./
      *
      * @param slot - the slot corresponding to the key pressed.
      */
@@ -171,7 +171,7 @@ public class Player implements Runnable {
     /**
      * Award a point to a player and perform other related actions.
      *
-     * @post - the player's score is increased by 1.
+     * @post - the player's score is increased by 1.                                    //Nadav question - what else should we write tests for
      * @post - the player's score is updated in the ui.
      */
     public void point() {
@@ -191,7 +191,7 @@ public class Player implements Runnable {
     /**
      * Penalize a player and perform other related actions.
      */
-    public void penalty() {
+    public void penalty() {                                    //Nadav question 3
        isFrozen = true;
 
     }
