@@ -91,8 +91,8 @@ public class Player implements Runnable {
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + "starting.");
         if (!human) createArtificialIntelligence();
 
-        while (!terminate) {
-            while(!numberPressed.isEmpty())
+        while (!terminate) {                                    
+            while(!numberPressed.isEmpty())                                    //Nadav question 1
             {
                 pressKey();
             }
@@ -134,7 +134,7 @@ public class Player implements Runnable {
     /**
      * Called when the game should be terminated due to an external event.
      */
-    public void terminate() {
+    public void terminate() {                                    //Nadav question 2
         // TODO implement
     }
 
