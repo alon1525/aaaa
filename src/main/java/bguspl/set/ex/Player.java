@@ -93,8 +93,8 @@ public class Player implements Runnable {
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + "starting.");
         if (!human) createArtificialIntelligence();
 
-        while (!terminate) {
-           while(!numberPressed.isEmpty() & dealer.tableIsFull)
+        while (!terminate) {                                    
+           while(!numberPressed.isEmpty() & dealer.tableIsFull)                                    //Nadav question 1
             {
                 pressKey();
             }
@@ -160,7 +160,7 @@ public class Player implements Runnable {
     }
 
     /**
-     * This method is called when a key is pressed.
+     * This method is called when a key is pressed./
      *
      * @param slot - the slot corresponding to the key pressed.
      */
@@ -197,7 +197,7 @@ public class Player implements Runnable {
     /**
      * Award a point to a player and perform other related actions.
      *
-     * @post - the player's score is increased by 1.
+     * @post - the player's score is increased by 1.                                    //Nadav question - what else should we write tests for
      * @post - the player's score is updated in the ui.
      */
     public void point() {

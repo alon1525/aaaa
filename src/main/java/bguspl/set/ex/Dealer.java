@@ -107,7 +107,7 @@ public class Dealer implements Runnable {
      * @return true iff the game should be finished.
      */
     private boolean shouldFinish() {
-        return terminate || env.util.findSets(deck, 1).size() == 0;
+        return terminate || env.util.findSets(deck, 1).size() == 0;                                  //Nadav - what about still set on board?
     }
 
     /**
@@ -150,11 +150,11 @@ public class Dealer implements Runnable {
      * Check if any cards can be removed from the deck and placed on the table.
      */
     private void placeCardsOnTable() {
-        for(int i =0;i<=11;i++)//for every empty slot we put a card there
+        for(int i =0;i<=11;i++)                 //for every empty slot we put a card there
         {
             if(!deck.isEmpty() && table.slotToCard[i]==null )
             {
-                Integer card = deck.remove(0);
+                Integer card = deck.remove(0);      
                 try {
                     Thread.sleep(env.config.tableDelayMillis);
                 } catch (InterruptedException ignored) {}
