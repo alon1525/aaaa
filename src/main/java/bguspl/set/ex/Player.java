@@ -60,6 +60,8 @@ public class Player implements Runnable {
 
     public boolean isFrozen = false;
 
+    public boolean isLegal = false;
+
     
     public Queue<Integer> numberPressed;
     /**
@@ -92,12 +94,13 @@ public class Player implements Runnable {
         if (!human) createArtificialIntelligence();
 
         while (!terminate) {
-            while(!numberPressed.isEmpty())
+           while(!numberPressed.isEmpty() & dealer.tableIsFull)
             {
                 pressKey();
             }
             if(isFrozen)
            {      
+                if(!isLegal){
                 try {
                     env.ui.setFreeze(id, env.config.penaltyFreezeMillis);
                     dealer.isFrozen[id] = true;
@@ -106,7 +109,21 @@ public class Player implements Runnable {
                     env.ui.setFreeze(id, 0);
                 } catch (InterruptedException ignored) {}
                 isFrozen = false;
+                }
+                else
+                {
+                    try{
+                    env.ui.setFreeze(id, env.config.pointFreezeMillis);
+                    dealer.isFrozen[id] = true;
+                    Thread.sleep(env.config.pointFreezeMillis);
+                    dealer.isFrozen[id] = false;
+                    env.ui.setFreeze(id, 0);}
+                    catch (InterruptedException ignored) {}
+                    isFrozen = false;
+                }
            } 
+            
+            
         }
         if (!human) try { aiThread.join(); } catch (InterruptedException ignored) {}
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
@@ -120,10 +137,14 @@ public class Player implements Runnable {
         // note: this is a very very smart AI (!)
         aiThread = new Thread(() -> {
             env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
+            int max = 11;
             while (!terminate) {
-                // TODO implement player key press simulator
+                int randomNubmer = (int)(Math.random()*(max+1));
+                if(numberPressed.size()<3 & dealer.tableIsFull){
+                    numberPressed.add(randomNubmer);
+                }
                 try {
-                    synchronized (this) { wait(); }
+                    synchronized (this) { Thread.sleep(100); }
                 } catch (InterruptedException ignored) {}
             }
             env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
@@ -135,7 +156,7 @@ public class Player implements Runnable {
      * Called when the game should be terminated due to an external event.
      */
     public void terminate() {
-        // TODO implement
+        terminate = true;
     }
 
     /**
@@ -144,7 +165,7 @@ public class Player implements Runnable {
      * @param slot - the slot corresponding to the key pressed.
      */
     public void keyPressed(int slot) {
-        if(numberPressed.size()<3){
+        if(numberPressed.size()<3 & dealer.tableIsFull == true){
             numberPressed.add(slot);
         }
         
@@ -152,7 +173,7 @@ public class Player implements Runnable {
 
     public void pressKey()
     {
-        while(!numberPressed.isEmpty()){
+        while(!numberPressed.isEmpty() & dealer.tableIsFull == true){
             int slot = numberPressed.remove();
             boolean tokenIsThere = false;
             int i =0;
@@ -164,6 +185,11 @@ public class Player implements Runnable {
             i++;
             }
             if(!tokenIsThere & tokenCount<3){
+                if(tokenCount==2)
+                {
+                    isFrozen = true;
+                    isLegal = isSet(slot);
+                }
                 table.placeToken(this, slot);
             }
         }
@@ -181,6 +207,15 @@ public class Player implements Runnable {
         env.ui.setScore(id, score);
     }
 
+    public Boolean isSet(int slot)
+    {
+        int var1 = table.slotToCard[currentTokens[0]];
+        int var2 = table.slotToCard[currentTokens[1]];
+        int var3 = table.slotToCard[slot];
+        int[] vars = {var1,var2,var3};
+        return env.util.testSet(vars);
+    }
+
     public void resetTokens()
     {
         tokenCount = 0;
@@ -192,7 +227,7 @@ public class Player implements Runnable {
      * Penalize a player and perform other related actions.
      */
     public void penalty() {
-       isFrozen = true;
+       
 
     }
 

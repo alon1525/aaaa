@@ -1,0 +1,5 @@
+[2022-12-16 14:01:50] [INFO   ] cannot read configuration file config.properties trying from resources.
+[2022-12-16 14:01:50] [INFO   ] configuration file was loaded from resources directory.
+[2022-12-16 14:01:51] [INFO   ] Thread dealer starting.
+[2022-12-16 14:01:51] [INFO   ] Thread Thread-1starting.
+[2022-12-16 14:01:51] [INFO   ] Thread Thread-0starting.

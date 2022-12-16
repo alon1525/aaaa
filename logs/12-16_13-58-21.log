@@ -1,0 +1,37 @@
+[2022-12-16 13:58:21] [INFO   ] cannot read configuration file config.properties trying from resources.
+[2022-12-16 13:58:21] [INFO   ] configuration file was loaded from resources directory.
+[2022-12-16 13:58:22] [INFO   ] Thread dealer starting.
+[2022-12-16 13:58:22] [INFO   ] Thread Thread-0starting.
+[2022-12-16 13:58:22] [INFO   ] Thread Thread-1starting.
+[2022-12-16 13:58:22] [SEVERE ] placing card 70 in slot 0
+[2022-12-16 13:58:22] [SEVERE ] placing card 13 in slot 1
+[2022-12-16 13:58:22] [SEVERE ] placing card 30 in slot 2
+[2022-12-16 13:58:23] [SEVERE ] placing card 17 in slot 3
+[2022-12-16 13:58:23] [SEVERE ] placing card 46 in slot 4
+[2022-12-16 13:58:23] [SEVERE ] placing card 78 in slot 5
+[2022-12-16 13:58:23] [SEVERE ] placing card 63 in slot 6
+[2022-12-16 13:58:23] [SEVERE ] placing card 2 in slot 7
+[2022-12-16 13:58:23] [SEVERE ] placing card 20 in slot 8
+[2022-12-16 13:58:23] [SEVERE ] placing card 27 in slot 9
+[2022-12-16 13:58:23] [SEVERE ] placing card 0 in slot 10
+[2022-12-16 13:58:23] [SEVERE ] placing card 68 in slot 11
+[2022-12-16 13:58:33] [SEVERE ] Key 81 was pressed by player 0
+[2022-12-16 13:58:33] [SEVERE ] player 0 placing token on slot 0
+[2022-12-16 13:58:33] [SEVERE ] Key 87 was pressed by player 0
+[2022-12-16 13:58:33] [SEVERE ] player 0 placing token on slot 1
+[2022-12-16 13:58:33] [SEVERE ] Key 69 was pressed by player 0
+[2022-12-16 13:58:33] [SEVERE ] player 0 placing token on slot 2
+[2022-12-16 13:58:33] [SEVERE ] setting player 0 freeze to 3000
+[2022-12-16 13:58:34] [SEVERE ] setting player 0 freeze to 2000
+[2022-12-16 13:58:35] [SEVERE ] setting player 0 freeze to 1000
+[2022-12-16 13:58:36] [SEVERE ] setting player 0 freeze to 0
+[2022-12-16 13:58:36] [SEVERE ] Key 69 was pressed by player 0
+[2022-12-16 13:58:36] [SEVERE ] Key 69 was pressed by player 0
+[2022-12-16 13:58:36] [SEVERE ] setting player 0 freeze to 0
+[2022-12-16 13:58:36] [SEVERE ] removing player 0 token from slot 2
+[2022-12-16 13:58:36] [SEVERE ] player 0 placing token on slot 2
+[2022-12-16 13:58:36] [SEVERE ] setting player 0 freeze to 3000
+[2022-12-16 13:58:37] [SEVERE ] setting player 0 freeze to -1000
+[2022-12-16 13:58:38] [SEVERE ] setting player 0 freeze to -2000
+[2022-12-16 13:58:39] [SEVERE ] setting player 0 freeze to -3000
+[2022-12-16 13:58:39] [SEVERE ] setting player 0 freeze to 0

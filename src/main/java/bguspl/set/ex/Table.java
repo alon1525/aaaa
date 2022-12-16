@@ -31,7 +31,7 @@ public class Table {
      */
     protected final Integer[] cardToSlot; // slot per card (if any)
     public Queue<int[]> possibleSetsQueue;
-
+    
     /**
      * Constructor for testing.
      *
@@ -98,8 +98,6 @@ public class Table {
         cardToSlot[card] = slot;
         slotToCard[slot] = card;
         env.ui.placeCard(card, slot);
-
-        // TODO implement
     }
 
     /**

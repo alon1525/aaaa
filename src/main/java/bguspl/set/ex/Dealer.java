@@ -26,6 +26,7 @@ public class Dealer implements Runnable {
     private int[] timesUpdated;
     public boolean[] isFrozen;
     public Thread[] playerThreads;
+    public boolean tableIsFull = false;
     /**
      * The list of card ids that are left in the dealer's deck.
      */
@@ -70,6 +71,10 @@ public class Dealer implements Runnable {
             timerLoop();
             removeAllCardsFromTable();
             updateTimerDisplay(true,currentTime);
+        }      
+        for (int i=players.length-1; i>=0; i--)
+        {
+            players[i].terminate();
         }
         announceWinners();
         
@@ -93,7 +98,7 @@ public class Dealer implements Runnable {
      * Called when the game should be terminated due to an external event.
      */
     public void terminate() {
-        // TODO implement
+        terminate = true;
     }
 
     /**
@@ -128,13 +133,13 @@ public class Dealer implements Runnable {
                     }
                 }
                 for (int i=0; i<possibleSetAndPlayer.length-1;i++){
+                    try {
+                        Thread.sleep(env.config.tableDelayMillis);
+                    } catch (InterruptedException ignored) {}
                     table.removeCard(possibleSetAndPlayer[i]);
+                    tableIsFull=false;
                 }
                 updateTimerDisplay(true, currentTime);
-            }
-            else
-            {
-                players[possibleSetAndPlayer[3]].penalty();
             }
             
         }
@@ -150,9 +155,13 @@ public class Dealer implements Runnable {
             if(!deck.isEmpty() && table.slotToCard[i]==null )
             {
                 Integer card = deck.remove(0);
+                try {
+                    Thread.sleep(env.config.tableDelayMillis);
+                } catch (InterruptedException ignored) {}
                 table.placeCard(card, i);
             }
         }
+        tableIsFull = true;
     }
 
     /**
@@ -172,14 +181,22 @@ public class Dealer implements Runnable {
         if(!reset)
         {
             for(int i=0; i<players.length; i++){
-                if(isFrozen[i]){
+                if(isFrozen[i]&!players[i].isLegal){
                     timesUpdated[i]++;
-                    env.ui.setFreeze(i,(3-timesUpdated[i])*1000);
+                    env.ui.setFreeze(i,(env.config.penaltyFreezeMillis-timesUpdated[i]*1000));
+                    if(timesUpdated[i] >= env.config.penaltyFreezeMillis/1000){
+                        timesUpdated[i] = 0;
+                    }
                 }
-                else
+                else if(isFrozen[i]& players[i].isLegal)
                 {
-                    timesUpdated[i] = 0;
+                    timesUpdated[i]++;
+                    env.ui.setFreeze(i,(env.config.pointFreezeMillis-timesUpdated[i]*1000));
+                    if(timesUpdated[i] >= env.config.pointFreezeMillis/1000){
+                        timesUpdated[i] = 0;
+                    }
                 }
+                
             }
             if((reshuffleTime-currentTime) <= env.config.turnTimeoutWarningMillis)
                 env.ui.setCountdown(Math.round((reshuffleTime-currentTime)/1000)*1000, true);
@@ -203,8 +220,11 @@ public class Dealer implements Runnable {
         for(int i =0;i<=11;i++)//removing all the cards on the table
         {
             deck.add(table.slotToCard[i]);
+            try {
+                Thread.sleep(env.config.tableDelayMillis);
+            } catch (InterruptedException ignored) {}
+            tableIsFull = false;
             table.removeCard(i);
-           
         }
         for (Player player : players){
             player.tokenCount = 0;
@@ -230,7 +250,7 @@ public class Dealer implements Runnable {
         int[] bestPlayers = new int[players.length];
         int bestScore = players[players.length-1].getScore();
         int index = players.length-1;
-        while(players[index].getScore() == bestScore)
+        while(index>=0 && players[index].getScore() == bestScore )
         {
             bestPlayers[index] = players[index].id;
             index--;
