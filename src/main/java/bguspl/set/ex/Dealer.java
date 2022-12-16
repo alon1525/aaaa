@@ -102,7 +102,7 @@ public class Dealer implements Runnable {
      * @return true iff the game should be finished.
      */
     private boolean shouldFinish() {
-        return terminate || env.util.findSets(deck, 1).size() == 0;
+        return terminate || env.util.findSets(deck, 1).size() == 0;                                  //Nadav - what about still set on board?
     }
 
     /**
