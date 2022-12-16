@@ -1,6 +1,8 @@
 package bguspl.set.ex;
 
+import java.util.Queue;
 import java.util.logging.Level;
+import java.util.LinkedList;
 
 import bguspl.set.Env;
 
@@ -30,7 +32,7 @@ public class Player implements Runnable {
     /**
      * The thread representing the current player.
      */
-    private Thread playerThread;
+    public Thread playerThread;
 
     /**
      * The thread of the AI (computer) player (an additional thread used to generate key presses).
@@ -56,7 +58,10 @@ public class Player implements Runnable {
 
     public int tokenCount;
 
-    public int freezeTime = 0;
+    public boolean isFrozen = false;
+
+    
+    public Queue<Integer> numberPressed;
     /**
      * The class constructor.
      *
@@ -74,6 +79,7 @@ public class Player implements Runnable {
         currentTokens = new int[3];
         tokenCount = 0;
         this.dealer = dealer;
+        numberPressed = new LinkedList<Integer>();
     }
 
     /**
@@ -86,7 +92,21 @@ public class Player implements Runnable {
         if (!human) createArtificialIntelligence();
 
         while (!terminate) {
-            // TODO implement main player loop
+            while(!numberPressed.isEmpty())
+            {
+                pressKey();
+            }
+            if(isFrozen)
+           {      
+                try {
+                    env.ui.setFreeze(id, env.config.penaltyFreezeMillis);
+                    dealer.isFrozen[id] = true;
+                    Thread.sleep(env.config.penaltyFreezeMillis);
+                    dealer.isFrozen[id] = false;
+                    env.ui.setFreeze(id, 0);
+                } catch (InterruptedException ignored) {}
+                isFrozen = false;
+           } 
         }
         if (!human) try { aiThread.join(); } catch (InterruptedException ignored) {}
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
@@ -124,21 +144,30 @@ public class Player implements Runnable {
      * @param slot - the slot corresponding to the key pressed.
      */
     public void keyPressed(int slot) {
-        boolean tokenIsThere = false;
-        int i =0;
-        while (i<tokenCount & !tokenIsThere){
+        if(numberPressed.size()<3){
+            numberPressed.add(slot);
+        }
+        
+    }
+
+    public void pressKey()
+    {
+        while(!numberPressed.isEmpty()){
+            int slot = numberPressed.remove();
+            boolean tokenIsThere = false;
+            int i =0;
+            while (i<tokenCount & !tokenIsThere){
             if(currentTokens[i]==slot){
                 tokenIsThere = true;
                 table.removeToken(this, slot);
             }
             i++;
+            }
+            if(!tokenIsThere & tokenCount<3){
+                table.placeToken(this, slot);
+            }
         }
-        if(!tokenIsThere & tokenCount<3){
-            table.placeToken(this, slot);
-        }
-        
     }
-
     /**
      * Award a point to a player and perform other related actions.
      *
@@ -163,12 +192,7 @@ public class Player implements Runnable {
      * Penalize a player and perform other related actions.
      */
     public void penalty() {
-        try {
-            dealer.isFrozen[id] = true;
-            env.ui.setFreeze(id, 3000);
-            Thread.sleep(3000);
-            dealer.isFrozen[id] = false;
-        } catch (InterruptedException ignored) {}
+       isFrozen = true;
 
     }
 

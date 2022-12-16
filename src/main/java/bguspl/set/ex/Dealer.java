@@ -25,6 +25,7 @@ public class Dealer implements Runnable {
     private final Player[] players;
     private int[] timesUpdated;
     public boolean[] isFrozen;
+    public Thread[] playerThreads;
     /**
      * The list of card ids that are left in the dealer's deck.
      */
@@ -37,8 +38,8 @@ public class Dealer implements Runnable {
     /**
      * The time when the dealer needs to reshuffle the deck due to turn timeout.
      */
-    private long reshuffleTime = System.currentTimeMillis()+60000;
-    private Long currentTime = System.currentTimeMillis();
+    private long reshuffleTime;
+    private Long currentTime;
 
     public Dealer(Env env, Table table, Player[] players) {
         this.env = env;
@@ -47,6 +48,9 @@ public class Dealer implements Runnable {
         deck = IntStream.range(0, env.config.deckSize).boxed().collect(Collectors.toList());
         timesUpdated = new int[players.length];
         isFrozen = new boolean[players.length];
+        reshuffleTime = System.currentTimeMillis()+env.config.turnTimeoutMillis;
+        currentTime = System.currentTimeMillis();
+        playerThreads = new Thread[players.length];
     }
 
     /**
@@ -55,6 +59,11 @@ public class Dealer implements Runnable {
     @Override
     public void run() {
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
+        for (int i=0; i<playerThreads.length; i++)
+        {
+            playerThreads[i] = new Thread(players[i]);
+            playerThreads[i].start();
+        }
         while (!shouldFinish()) {
             Collections.shuffle(deck);
             placeCardsOnTable();
@@ -63,6 +72,7 @@ public class Dealer implements Runnable {
             updateTimerDisplay(true,currentTime);
         }
         announceWinners();
+        
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
     }
 
@@ -171,7 +181,7 @@ public class Dealer implements Runnable {
                     timesUpdated[i] = 0;
                 }
             }
-            if((reshuffleTime-currentTime) <= 6000)
+            if((reshuffleTime-currentTime) <= env.config.turnTimeoutWarningMillis)
                 env.ui.setCountdown(Math.round((reshuffleTime-currentTime)/1000)*1000, true);
             else
             {
@@ -182,7 +192,7 @@ public class Dealer implements Runnable {
         else
         {
             reshuffleTime = System.currentTimeMillis() + 60000;
-            env.ui.setCountdown(60000, false);
+            env.ui.setCountdown(env.config.turnTimeoutMillis, false);
         }
     }
 
