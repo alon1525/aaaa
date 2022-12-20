@@ -1,0 +1,91 @@
+package bguspl.set.ex;
+
+import bguspl.set.Config;
+import bguspl.set.Env;
+import bguspl.set.UserInterface;
+import bguspl.set.Util;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.logging.Logger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PlayerTestNadav {
+
+    Player player;
+    @Mock
+    Util util;
+    @Mock
+    private UserInterface ui;
+    @Mock
+    private Table table;
+    @Mock
+    private Dealer dealer;
+    @Mock
+    private Logger logger;
+
+    void assertInvariants() {
+        assertTrue(player.id >= 0);
+        assertTrue(player.getScore() >= 0);
+    }
+
+    @BeforeEach
+    void setUp() {
+        // purposely do not find the configuration files (use defaults here).
+        Env env = new Env(logger, new Config(logger, ""), ui, util);
+        player = new Player(env, dealer, table, 0, false);
+        assertInvariants();
+    }
+
+    @AfterEach
+    void tearDown() {
+        assertInvariants();
+    }
+
+    @Test 1
+    //this test verifies that the Player's Tokens are placed and removed succsesfully
+    void tokenPlaceAndRemoveTest() {
+        player.resetTokens();
+        player.placeToken(1);
+        assertTrue("Token hasn't been placed!",player.tokenCount==1);
+        player.removeToken(1);
+        assertTrue("Token hasn't been removed!",player.tokenCount==0);
+    }
+
+    @Test 2
+    //this test verifies that the Player's Tokens can all be Placed, and that you cannot place to many,
+    // and that the point function removes all token succesfully
+    void tokenPlaceAndRemoveTest() {
+        player.resetTokens();
+        player.placeToken(1);
+        player.placeToken(3);
+        player.placeToken(3);
+        assertTrue("token hasn't been added!",player.tokenCount==3);
+        player.placeToken(4);
+        assertTrue("more than three tokens have been added!",player.tokenCount==3);
+        player.point();
+        assertTrue("token have not been removed after point!",player.tokenCount==0);
+    }
+
+    @Test
+    void point() {
+
+        // force table.countCards to return 3
+        when(table.countCards()).thenReturn(3); // this part is just for demonstration
+
+        // calculate the expected score for later
+        int expectedScore = player.getScore() + 1;
+
+        // call the method we are testing
+        player.point();
+
+        // check that the score was increased correctly
+        assertEquals(expectedScore, player.getScore());
+
+        // check that ui.setScore was called with the player's id and the correct score
+        verify(ui).setScore(eq(player.id), eq(expectedScore));
+    }
+}

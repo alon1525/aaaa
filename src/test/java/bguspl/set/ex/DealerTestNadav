@@ -1,0 +1,98 @@
+package bguspl.set.ex;
+
+import bguspl.set.Config;
+import bguspl.set.Env;
+import bguspl.set.UserInterface;
+import bguspl.set.Util;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class DealerTestNadav {
+
+    /**
+     * Game entities.
+     */
+    private final Table table;
+    private final Player[] players;
+    private int[] timesUpdated;
+    public Thread[] playerThreads;
+    public boolean tableIsFull = false;
+    /**
+     * The list of card ids that are left in the dealer's deck.
+     */
+    private final List<Integer> deck;
+
+    /**
+     * True iff game should be terminated due to an external event.
+     */
+    private volatile boolean terminate;
+
+    public Dealer(Env env, Table table, Player[] players) {
+        this.env = env;
+        this.table = table;
+        this.players = players;
+        deck = IntStream.range(0, env.config.deckSize).boxed().collect(Collectors.toList());
+        timesUpdated = new int[players.length];
+        isFrozen = new boolean[players.length];
+        reshuffleTime = System.currentTimeMillis()+env.config.turnTimeoutMillis;
+        currentTime = System.currentTimeMillis();
+        playerThreads = new Thread[players.length];
+    }
+
+    private int fillSomeSlots() {
+        slotToCard[1] = 3;
+        slotToCard[2] = 5;
+        cardToSlot[3] = 1;
+        cardToSlot[5] = 2;
+
+        return 2;
+    }
+
+    private void fillAllSlots() {
+        for (int i = 0; i < slotToCard.length; ++i) {
+            slotToCard[i] = i;
+            cardToSlot[i] = i;
+        }
+    }
+
+    private void placeSomeCardsAndAssert() {
+        table.placeCard(8, 2);
+
+        assertEquals(8, (int) slotToCard[2]);
+        assertEquals(2, (int) cardToSlot[8]);
+    }
+
+    @AfterEach
+    //this test checks if there are the same amount of players as player's threads
+    void countThreads() {
+        assertEquals(players.length, playerThreads.length);
+    }
+    
+    @Test1
+    //this test checks if there are the same amount of players as player's threads
+    void stopCheck() {
+        assertFalse("dealer has been started as shouldFinish!",dealer.shouldFinish());
+        dealer.terminate();
+        assertTrue("terminate didn't work!",dealer.shouldFinish()); 
+    }
+    
+    @Test2
+    //this test verifies that after a card is placed/removed by dealer it is implemented on the Table
+    void placeAndRemoveCheck() {
+        dealer.placeCardsOnTable();
+        assertEquals("not all cards have been placed!",dealer.table.countCards, dealer.table.slotToCard.length());
+        dealer.removeAllCardsFromTable();
+        int emptySlots = 0;
+        for(int i=0; i<dealer.table.slotToCard; i++ ){
+            if (dealer.table.slotToCard[i]==null) emptySlots++;
+        } 
+        assertTrue("not all cards have been removed!",dealer.table.slotToCard.length(), emptySlots);
+    } 
+}
